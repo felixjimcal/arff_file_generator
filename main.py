@@ -51,14 +51,14 @@ if __name__ == "__main__":
         df_day.rename(columns={'vol': VOLUME}, inplace=True)
         asset += '_XTB'
 
-    rounds_digits = 2
-    df_day['ema'] = round(talib.EMA(df_day.close, 20), rounds_digits)
-    df_day['RSI'] = round(talib.RSI(df_day.close, 14), rounds_digits)
-    df_day['AD'] = round(talib.AD(df_day.high, df_day.low, df_day.close, df_day.volume), rounds_digits)
-    df_day['ADOSC'] = round(talib.ADOSC(df_day.high, df_day.low, df_day.close, df_day.volume, fastperiod=3, slowperiod=10), rounds_digits)
-    df_day['ADX'] = round(talib.ADX(df_day.high, df_day.low, df_day.close, timeperiod=14), rounds_digits)
-    df_day['ADXR'] = round(talib.ADXR(df_day.high, df_day.low, df_day.close, timeperiod=14), rounds_digits)
-    df_day['APO'] = round(talib.APO(df_day.close, fastperiod=12, slowperiod=26, matype=0), rounds_digits)
+    round_digits = 2
+    df_day['ema'] = round(talib.EMA(df_day.close, 20), round_digits)
+    df_day['RSI'] = round(talib.RSI(df_day.close, 14), round_digits)
+    df_day['AD'] = round(talib.AD(df_day.high, df_day.low, df_day.close, df_day.volume), round_digits)
+    df_day['ADOSC'] = round(talib.ADOSC(df_day.high, df_day.low, df_day.close, df_day.volume, fastperiod=3, slowperiod=10), round_digits)
+    df_day['ADX'] = round(talib.ADX(df_day.high, df_day.low, df_day.close, timeperiod=14), round_digits)
+    df_day['ADXR'] = round(talib.ADXR(df_day.high, df_day.low, df_day.close, timeperiod=14), round_digits)
+    df_day['APO'] = round(talib.APO(df_day.close, fastperiod=12, slowperiod=26, matype=0), round_digits)
     # aroondown, aroonup = talib.AROON(df_day.high, df_day.low, timeperiod=14)
     # df_day['AROON'] = round(talib.AROON(), rounds_digits)
     # df_day['AROONOSC'] = round(talib.AROONOSC(), rounds_digits)
@@ -180,8 +180,8 @@ if __name__ == "__main__":
     # df_day['STOCH'] = round(talib.STOCH(), rounds_digits)
     # df_day['STOCHF'] = round(talib.STOCHF(), rounds_digits)
     fastk, fastd = talib.STOCHRSI(df_day.close, timeperiod=14, fastk_period=5, fastd_period=3, fastd_matype=0)
-    df_day['STOCHRSI_fastk'] = round(fastk, rounds_digits)
-    df_day['STOCHRSI_fastd'] = round(fastd, rounds_digits)
+    df_day['STOCHRSI_fastk'] = round(fastk, round_digits)
+    df_day['STOCHRSI_fastd'] = round(fastd, round_digits)
     # df_day['SUM'] = round(talib.SUM(), rounds_digits)
     # df_day['T3'] = round(talib.T3(), rounds_digits)
     # df_day['TEMA'] = round(talib.TEMA(), rounds_digits)
