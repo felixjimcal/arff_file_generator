@@ -9,5 +9,5 @@ Start downloading weka:
 https://waikato.github.io/weka-wiki/downloading_weka/
 
 Source data:
-Binance
+Binance and XTB
 
