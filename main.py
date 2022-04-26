@@ -16,18 +16,19 @@ VOLUME = 'volume'
 CTM_STRING = 'ctm_string'
 
 RATE_INFO = 'rateInfos'
+time_format = '%d/%m/%Y %H:%M:%S'
 
 if __name__ == "__main__":
     asset = 'BTCUSDT'
-    collect_data_from_binance = False
+    collect_data_from_binance = True
     if collect_data_from_binance:
         client = Futures(key='<api_key>', secret='<api_secret>')
-        ohlc = client.klines(asset, "1d", **{"limit": 1500})  # limit 1500
+        ohlc = client.klines(asset, "1h", **{"limit": 1500})  # limit 1500
         ohlc.pop()  # https://binance-docs.github.io/apidocs/futures/en/#kline-candlestick-data
         df_day = pd.DataFrame(ohlc, columns=[TIMESTAMP, OPEN, HIGH, LOW, CLOSE, VOLUME, 'close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore'])
         df_day = df_day.drop(['close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore'], axis=1)
         df_day.insert(1, CTM_STRING, np.nan)
-        df_day[CTM_STRING] = [str(datetime.datetime.utcfromtimestamp(x / 1000).strftime('%d/%m/%Y')) for x in df_day.timestamp]
+        df_day[CTM_STRING] = [str(datetime.datetime.utcfromtimestamp(x / 1000).strftime(time_format)) for x in df_day.timestamp]
         for col in df_day.columns[2:]:
             df_day[col] = pd.to_numeric(df_day[col])
     else:
@@ -37,7 +38,7 @@ if __name__ == "__main__":
         asset = 'BITCOIN'
         end = datetime.datetime.today().timestamp()
         start = datetime.datetime.timestamp(datetime.datetime.now() - datetime.timedelta(weeks=1000))
-        chart_day = client.get_chart_range_request(asset, PERIOD.ONE_DAY.value, start, end, 0)
+        chart_day = client.get_chart_range_request(asset, PERIOD.ONE_HOUR.value, start, end, 0)
         digits = int('1' + ('0' * chart_day['digits']))
         for rate in chart_day[RATE_INFO]:
             rate[CLOSE] = (rate[OPEN] + rate[CLOSE]) / digits
@@ -47,7 +48,7 @@ if __name__ == "__main__":
         df_day = pd.DataFrame(chart_day[RATE_INFO])
         df_day = df_day.drop(['ctmString'], axis=1)
         df_day.insert(1, CTM_STRING, np.nan)
-        df_day[CTM_STRING] = [str(datetime.datetime.fromtimestamp(x / 1000).strftime('%d/%m/%Y')) for x in df_day.ctm]
+        df_day[CTM_STRING] = [str(datetime.datetime.fromtimestamp(x / 1000).strftime(time_format)) for x in df_day.ctm]
         df_day.rename(columns={'vol': VOLUME}, inplace=True)
         asset += '_XTB'
 
@@ -79,7 +80,7 @@ if __name__ == "__main__":
     # df_day['aroonup'] = aroonup
     # df_day['AROONOSC'] = talib.AROONOSC(df_day.high, df_day.low, timeperiod=14)
     df_day['BOP'] = talib.BOP(df_day.open, df_day.high, df_day.low, df_day.close)
-    # df_day['CCI'] = talib.CCI(df_day.high, df_day.low, df_day.close, timeperiod=14)
+    df_day['CCI'] = talib.CCI(df_day.high, df_day.low, df_day.close, timeperiod=14)
     # df_day['CMO'] = talib.CMO(df_day.close, timeperiod=14)
     # df_day['DX'] = talib.DX(df_day.high, df_day.low, df_day.close, timeperiod=14)
     # macd, macdsignal, macdhist = talib.MACD(df_day.close, fastperiod=12, slowperiod=26, signalperiod=9)
@@ -105,19 +106,19 @@ if __name__ == "__main__":
     # df_day['ROCP'] = talib.ROCP(df_day.close, timeperiod=10)
     # df_day['ROCR'] = talib.ROCR(df_day.close, timeperiod=10)
     # df_day['ROCR100'] = talib.ROCR100(df_day.close, timeperiod=10)
-    # df_day['RSI'] = talib.RSI(df_day.close, timeperiod=14)
+    df_day['RSI'] = talib.RSI(df_day.close, timeperiod=14)
     # slowk, slowd = talib.STOCH(df_day.high, df_day.low, df_day.close, fastk_period=5, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
     # df_day['slowk'] = slowk
     # df_day['slowd'] = slowd
-    # fastk, fastd = talib.STOCHF(df_day.high, df_day.low, df_day.close, fastk_period=5, fastd_period=3, fastd_matype=0)
-    # df_day['fastk'] = fastk
-    # df_day['fastd'] = fastd
+    fastk, fastd = talib.STOCHF(df_day.high, df_day.low, df_day.close, fastk_period=5, fastd_period=3, fastd_matype=0)
+    df_day['fastk'] = fastk
+    df_day['fastd'] = fastd
     fastk_rsi, fastd_rsi = talib.STOCHRSI(df_day.close, timeperiod=14, fastk_period=5, fastd_period=3, fastd_matype=0)
     df_day['fastk_rsi'] = fastk_rsi
     df_day['fastd_rsi'] = fastd_rsi
     # df_day['TRIX'] = talib.TRIX(df_day.close, timeperiod=30)
     # df_day['ULTOSC'] = talib.ULTOSC(df_day.high, df_day.low, df_day.close, timeperiod1=7, timeperiod2=14, timeperiod3=28)
-    # df_day['WILLR'] = talib.WILLR(df_day.high, df_day.low, df_day.close, timeperiod=14)
+    df_day['WILLR'] = talib.WILLR(df_day.high, df_day.low, df_day.close, timeperiod=14)
 
     # Volume Indicators
     # df_day['AD'] = talib.AD(df_day.high, df_day.low, df_day.close, df_day.volume)
