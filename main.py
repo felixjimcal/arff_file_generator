@@ -20,7 +20,7 @@ time_format = '%d/%m/%Y %H:%M:%S'
 
 if __name__ == "__main__":
     asset = 'BTCUSDT'
-    collect_data_from_binance = True
+    collect_data_from_binance = False
     if collect_data_from_binance:
         client = Futures(key='<api_key>', secret='<api_secret>')
         ohlc = client.klines(asset, "1h", **{"limit": 1500})  # limit 1500
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         asset = 'BITCOIN'
         end = datetime.datetime.today().timestamp()
         start = datetime.datetime.timestamp(datetime.datetime.now() - datetime.timedelta(weeks=1000))
-        chart_day = client.get_chart_range_request(asset, PERIOD.ONE_HOUR.value, start, end, 0)
+        chart_day = client.get_chart_range_request(asset, PERIOD.ONE_DAY.value, start, end, 0)
         digits = int('1' + ('0' * chart_day['digits']))
         for rate in chart_day[RATE_INFO]:
             rate[CLOSE] = (rate[OPEN] + rate[CLOSE]) / digits
